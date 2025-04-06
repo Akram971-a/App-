@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akhair company</title>
+    <style>
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--background);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-title {
+            color: var(--primary);
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+
+        .auth-switch {
+            margin-top: 1rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .auth-switch:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: var(--danger);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        :root {
+            --primary: #3B82F6;
+            --danger: #EF4444;
+            --background: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --success: #10B981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(45deg, #3B82F6, #6366F1);
+            color: white;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .header-buttons .button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header-buttons .button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .price-control {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .price-control input {
+            width: 100px;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            border: 2px solid white;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1E293B;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .transactions-table th,
+        .transactions-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        .transactions-table th {
+            background: #F8FAFC;
+            font-weight: 600;
+        }
+
+        .payment-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .cash {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .credit {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .totals {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .total-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .backup-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            border: 2px dashed var(--primary);
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .backup-section h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .backup-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .forgot-password {
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .recovery-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .recovery-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .totals {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dashboard-section {
+            margin-top: 2rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #64748B;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .dashboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .dashboard-table th,
+        .dashboard-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        .dashboard-table th {
+            font-weight: 600;
+            color: #64748B;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="loginContainer">
+        <div class="login-card">
+            <h2 class="login-title"> Akram digital solution</h2>
+            <div class="input-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" placeholder="Geli username-ka">
+            </div>
+            <div class="input-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Geli password-ka">
+            </div>
+            <div class="error-message" id="loginError"></div>
+            <button class="button primary" style="width: 100%; margin-top: 1rem;" onclick="handleLogin()">
+                🚪 Gal
+            </button>
+            <div class="auth-switch" onclick="toggleAuthMode()">hadii adan heysan akoon Iska diiwaan geli xagaan.</div>
+            <div class="forgot-password" onclick="showRecovery()">Password-ka ma ilowday?</div>
+        </div>
+    </div>
+
+    <div class="login-container" id="registerContainer" style="display: none;">
+        <div class="login-card">
+            <h2 class="login-title">🥛 Iska Diiwaan Gelid</h2>
+            <div class="input-group">
+                <label for="newUsername">Username:</label>
+                <input type="text" id="newUsername" placeholder="Geli username cusub">
+            </div>
+            <div class="input-group">
+                <label for="newCompany">Magaca Shirkadda:</label>
+                <input type="text" id="newCompany" placeholder="Geli magaca shirkadda">
+            </div>
+            <div class="input-group">
+                <label for="newEmail">Email:</label>
+                <input type="email" id="newEmail" placeholder="Geli email-ka">
+            </div>
+            <div class="input-group">
+                <label for="newPhone">Telefoon:</label>
+                <input type="tel" id="newPhone" placeholder="Geli telefoonka">
+            </div>
+            <div class="input-group">
+                <label for="newPassword">Password:</label>
+                <input type="password" id="newPassword" placeholder="Geli password cusub">
+            </div>
+            <div class="input-group">
+                <label for="confirmPassword">Hubi Password:</label>
+                <input type="password" id="confirmPassword" placeholder="Geli password mar kale">
+            </div>
+            <div class="error-message" id="registerError"></div>
+            <button class="button primary" style="width: 100%; margin-top: 1rem;" onclick="handleRegister()">
+                ✍️ Iska Diiwaan Gelid
+            </button>
+            <div class="auth-switch" onclick="toggleAuthMode()">Hadda account? Gal</div>
+        </div>
+    </div>
+
+    <div class="recovery-container" id="recoveryContainer">
+        <div class="recovery-card">
+            <h2 class="login-title">🔑 Soo Hel Password</h2>
+            <div class="input-group">
+                <label for="recoveryEmail">Email:</label>
+                <input type="email" id="recoveryEmail" placeholder="Geli email-ka">
+            </div>
+            <div class="error-message" id="recoveryError"></div>
+            <button class="button primary" style="width: 100%; margin-top: 1rem;" onclick="handleRecovery()">
+                🔑 Soo Hel Password
+            </button>
+            <div class="auth-switch" onclick="hideRecovery()">Dib ugu noqo</div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
+        <div class="header">
+            <h1 id="companyTitle">🥛 Alkhair company</h1>
+            <div class="header-buttons">
+                <button class="button" onclick="showDashboard()">📊 Dashboard</button>
+                <button class="button" onclick="showTransactions()">📝 Transactions</button>
+                <button class="button" onclick="backupData()">💾 Backup Data</button>
+                <button class="button" onclick="handleLogout()">🚪 Ka Bax</button>
+            </div>
+        </div>
+
+        <!-- Add new dashboard section -->
+        <div id="dashboardSection" class="dashboard-section" style="display: none;">
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>📊 Today's Summary</h3>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Sales</span>
+                            <span class="stat-value" id="todaySales">$0.00</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Liters</span>
+                            <span class="stat-value" id="todayLiters">0L</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <h3>💰 Payment Methods</h3>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Cash Sales</span>
+                            <span class="stat-value" id="cashSales">$0.00</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Credit Sales</span>
+                            <span class="stat-value" id="creditSales">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>📈 Monthly Stats</h3>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">This Month</span>
+                            <span class="stat-value" id="monthSales">$0.00</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Monthly Liters</span>
+                            <span class="stat-value" id="monthLiters">0L</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>📅 Recent Transactions</h3>
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Liters</th>
+                            <th>Amount</th>
+                            <th>Payment</th>
+                            <th>Customer</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentTransactions"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Existing transactions section -->
+        <div id="transactionsSection">
+            <div class="form-card">
+                <div class="input-group">
+                    <label for="liters">Tirada Litirka:</label>
+                    <input type="number" id="liters" min="1" placeholder="Geli litirka...">
+                </div>
+
+                <div class="input-group">
+                    <label for="payment">Habka Lacag Bixinta:</label>
+                    <select id="payment">
+                        <option value="Cash">Cash</option>
+                        <option value="Credit">Deyn</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button class="button primary" onclick="addTransaction()">📥 Ku Dar Iibka</button>
+                    <button class="button danger" onclick="clearTransactions()">🗑️ Tirtir Dhammaan</button>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h2 style="margin-bottom: 1rem;">Liiska Iibyada</h2>
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Litir</th>
+                            <th>Qiimaha</th>
+                            <th>Habka</th>
+                            <th>Taariikh</th>
+                            <th>Waqti</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-body">
+                    </tbody>
+                </table>
+
+                <div class="totals">
+                    <div class="total-card">
+                        <h3>💵 Wadarta cashka </h3>
+                        <p id="total-cash">$0.00</p>
+                    </div>
+                    <div class="total-card">
+                        <h3>📝 Wadarta Deynta </h3>
+                        <p id="total-credit">$0.00</p>
+                    </div>
+                    <div class="total-card success">
+                        <h3>💰 Wadarta Guud</h3>
+                        <p id="total-all">$0.00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        const USERS_KEY = 'dukaan_users';
+        const PRICE_KEY = 'caanaha_qiime';
+        let transactions = [];
+
+        function loadUsers() {
+            const users = localStorage.getItem(USERS_KEY);
+            return users ? JSON.parse(users) : {};
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        }
+
+        function toggleAuthMode() {
+            const loginContainer = document.getElementById('loginContainer');
+            const registerContainer = document.getElementById('registerContainer');
+            const loginError = document.getElementById('loginError');
+            const registerError = document.getElementById('registerError');
+
+            if (loginContainer.style.display === 'none') {
+                loginContainer.style.display = 'flex';
+                registerContainer.style.display = 'none';
+                loginError.style.display = 'none';
+            } else {
+                loginContainer.style.display = 'none';
+                registerContainer.style.display = 'flex';
+                registerError.style.display = 'none';
+            }
+        }
+
+        function handleRegister() {
+            const username = document.getElementById('newUsername').value;
+            const company = document.getElementById('newCompany').value;
+            const email = document.getElementById('newEmail').value;
+            const phone = document.getElementById('newPhone').value;
+            const password = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorElement = document.getElementById('registerError');
+
+            if (!username || !company || !email || !phone || !password || !confirmPassword) {
+                errorElement.textContent = '❌ Fadlan buuxi dhammaan meelaha!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                errorElement.textContent = '❌ Fadlan geli email sax ah!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // Phone validation (basic validation for Somali phone numbers)
+            const phoneRegex = /^(\+252|0)[0-9]{9}$/;
+            if (!phoneRegex.test(phone)) {
+                errorElement.textContent = '❌ Fadlan geli telefoon sax ah! (Tusaale: +252615123456 ama 0615123456)';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errorElement.textContent = '❌ Password-ka ma isku mid yahay!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            const users = loadUsers();
+            if (users[username]) {
+                errorElement.textContent = '❌ Username-kan horay ayaa la isticmaaliyay!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            users[username] = {
+                password: password,
+                company: company,
+                email: email,
+                phone: phone,
+                transactions: [],
+                price: 2.00
+            };
+
+            saveUsers(users);
+            alert('✅ Account-ka si guul leh ayaa la sameeyay!');
+            toggleAuthMode();
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('loginError');
+
+            if (!username || !password) {
+                errorElement.textContent = '❌ Fadlan buuxi dhammaan meelaha!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            const users = loadUsers();
+            if (!users[username] || users[username].password !== password) {
+                errorElement.textContent = '❌ Username ama password khalad!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            currentUser = username;
+            transactions = users[username].transactions;
+            PRICE_PER_LITER = users[username].price;
+
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
+            document.getElementById('priceInput').value = PRICE_PER_LITER.toFixed(2);
+            document.getElementById('companyTitle').textContent = `🥛 ${users[username].company}`;
+            renderTransactions();
+            showDashboard();
+        }
+
+        function saveTransactions() {
+            const users = loadUsers();
+            if (currentUser) {
+                users[currentUser].transactions = transactions;
+                users[currentUser].price = PRICE_PER_LITER;
+                saveUsers(users);
+            }
+        }
+
+        function updatePrice() {
+            const newPrice = parseFloat(document.getElementById('priceInput').value);
+            
+            if (!newPrice || newPrice <= 0) {
+                alert('❌ Fadlan geli qiime sax ah!');
+                return;
+            }
+
+            PRICE_PER_LITER = newPrice;
+            saveTransactions();
+            alert('✅ Qiimaha cusub waa ' + PRICE_PER_LITER.toFixed(2) + '$');
+        }
+
+        function clearTransactions() {
+            if(confirm('❓ Ma hubtaa inaad tirtirto dhammaan iibyada?')) {
+                transactions = [];
+                saveTransactions();
+                renderTransactions();
+                alert('🗑️ Dhammaan iibyadii waa la tirtiray!');
+            }
+        }
+
+        function init() {
+            window.addEventListener('beforeunload', saveTransactions);
+        }
+
+        let PRICE_PER_LITER = 2.00;
+        const DISCOUNT_RATE = 0.05;
+        const STORAGE_KEY = 'dukaan_caanaha_xog';
+
+        function loadPrice() {
+            const savedPrice = localStorage.getItem(PRICE_KEY);
+            PRICE_PER_LITER = savedPrice ? parseFloat(savedPrice) : 2.00;
+            document.getElementById('priceInput').value = PRICE_PER_LITER.toFixed(2);
+        }
+
+        function calculatePrice(liters) {
+            return liters >= 10 
+                ? liters * PRICE_PER_LITER * (1 - DISCOUNT_RATE)
+                : liters * PRICE_PER_LITER;
+        }
+
+        function renderTransactions() {
+            const tbody = document.getElementById('transactions-body');
+            tbody.innerHTML = '';
+
+            let totalCash = 0;
+            let totalCredit = 0;
+
+            transactions.forEach(transaction => {
+                const date = new Date(transaction.datetime);
+                const paymentDisplay = transaction.payment_method === 'Credit'
+                    ? `${transaction.payment_method} (${transaction.customerName})`
+                    : transaction.payment_method;
+
+                const row = `
+                    <tr>
+                        <td>${transaction.liters}L</td>
+                        <td>$${transaction.total_price.toFixed(2)}</td>
+                        <td>
+                            <span class="payment-tag ${transaction.payment_method === 'Cash' ? 'cash' : 'credit'}">
+                                ${paymentDisplay}
+                            </span>
+                        </td>
+                        <td>${date.toLocaleDateString('so-SO')}</td>
+                        <td>${date.toLocaleTimeString('so-SO', { hour: '2-digit', minute: '2-digit' })}</td>
+                    </tr>
+                `;
+
+                if(transaction.payment_method === 'Cash') totalCash += transaction.total_price;
+                if(transaction.payment_method === 'Credit') totalCredit += transaction.total_price;
+
+                tbody.innerHTML += row;
+            });
+
+            const totalAll = totalCash + totalCredit;
+            
+            document.getElementById('total-cash').textContent = `$${totalCash.toFixed(2)}`;
+            document.getElementById('total-credit').textContent = `$${totalCredit.toFixed(2)}`;
+            document.getElementById('total-all').textContent = `$${totalAll.toFixed(2)}`;
+        }
+
+        function addTransaction() {
+            const litersInput = document.getElementById('liters');
+            const liters = parseInt(litersInput.value);
+            const paymentMethod = document.getElementById('payment').value;
+            
+            if (!liters || liters < 1) {
+                alert('❌ Fadlan geli tirada litirka sax ah!');
+                return;
+            }
+
+            let customerName = '';
+            if (paymentMethod === 'Credit') {
+                customerName = prompt('Geli magaca macmiilka:');
+                if (!customerName) {
+                    alert('❌ Waa inaad gelisaa magaca macmiilka!');
+                    return;
+                }
+            }
+
+            const newTransaction = {
+                liters: liters,
+                total_price: calculatePrice(liters),
+                payment_method: paymentMethod,
+                datetime: new Date().toISOString(),
+                customerName: customerName
+            };
+
+            transactions.push(newTransaction);
+            saveTransactions();
+            renderTransactions();
+
+            litersInput.value = '';
+            litersInput.focus();
+            alert('✅ Iibka si guul leh ayaa loo kaydiyay!');
+        }
+
+        function showRecovery() {
+            document.getElementById('recoveryContainer').style.display = 'flex';
+        }
+
+        function hideRecovery() {
+            document.getElementById('recoveryContainer').style.display = 'none';
+            document.getElementById('recoveryError').style.display = 'none';
+        }
+
+        function handleRecovery() {
+            const email = document.getElementById('recoveryEmail').value;
+            const errorElement = document.getElementById('recoveryError');
+
+            if (!email) {
+                errorElement.textContent = '❌ Fadlan geli email-ka!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            const users = loadUsers();
+            let foundUser = null;
+
+            for (const [username, userData] of Object.entries(users)) {
+                if (userData.email === email) {
+                    foundUser = username;
+                    break;
+                }
+            }
+
+            if (!foundUser) {
+                errorElement.textContent = '❌ Email-kan ma jiro account!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // In a real application, you would send a recovery email
+            // For this demo, we'll just show the username
+            alert(`✅ Username-ka waa: ${foundUser}\nFadlan isticmaal username-ka si aad u galto account-kaaga.`);
+            hideRecovery();
+        }
+
+        function backupData() {
+            const users = loadUsers();
+            const backup = {
+                users: users,
+                timestamp: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `alkhair_backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert('✅ Data-ga si guul leh ayaa la backup-gareeyay!');
+        }
+
+        function restoreData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    try {
+                        const backup = JSON.parse(e.target.result);
+                        
+                        if (!backup.users || !backup.timestamp) {
+                            alert('❌ File-kan ma aha backup sax ah!');
+                            return;
+                        }
+
+                        if (confirm('❓ Ma hubtaa inaad restore-gareysaa data-ga? Data-ga hadda jira waa la tirtiri doonaa.')) {
+                            saveUsers(backup.users);
+                            alert('✅ Data-ga si guul leh ayaa la restore-gareeyay!');
+                            location.reload();
+                        }
+                    } catch (error) {
+                        alert('❌ Khalad ayaa dhacay marka la restore-gareynayay!');
+                    }
+                };
+
+                reader.readAsText(file);
+            };
+
+            input.click();
+        }
+
+        function handleLogout() {
+            if (confirm('❓ Ma hubtaa inaad ka baxdo?')) {
+                currentUser = null;
+                transactions = [];
+                document.getElementById('mainContainer').style.display = 'none';
+                document.getElementById('loginContainer').style.display = 'flex';
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('dashboardSection').style.display = 'block';
+            document.getElementById('transactionsSection').style.display = 'none';
+            updateDashboard();
+        }
+
+        function showTransactions() {
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('transactionsSection').style.display = 'block';
+        }
+
+        function updateDashboard() {
+            const today = new Date().toDateString();
+            const thisMonth = new Date().getMonth();
+            
+            let todaySales = 0;
+            let todayLiters = 0;
+            let totalCash = 0;
+            let totalCredit = 0;
+            let monthSales = 0;
+            let monthLiters = 0;
+
+            transactions.forEach(transaction => {
+                const txDate = new Date(transaction.datetime);
+                
+                // Today's stats
+                if (txDate.toDateString() === today) {
+                    todaySales += transaction.total_price;
+                    todayLiters += transaction.liters;
+                }
+
+                // Monthly stats
+                if (txDate.getMonth() === thisMonth) {
+                    monthSales += transaction.total_price;
+                    monthLiters += transaction.liters;
+                }
+
+                // Payment method stats
+                if (transaction.payment_method === 'Cash') {
+                    totalCash += transaction.total_price;
+                } else {
+                    totalCredit += transaction.total_price;
+                }
+            });
+
+            // Update dashboard values
+            document.getElementById('todaySales').textContent = `$${todaySales.toFixed(2)}`;
+            document.getElementById('todayLiters').textContent = `${todayLiters}L`;
+            document.getElementById('cashSales').textContent = `$${totalCash.toFixed(2)}`;
+            document.getElementById('creditSales').textContent = `$${totalCredit.toFixed(2)}`;
+            document.getElementById('monthSales').textContent = `$${monthSales.toFixed(2)}`;
+            document.getElementById('monthLiters').textContent = `${monthLiters}L`;
+
+            // Update recent transactions
+            const recentTransactions = transactions
+                .slice(-5) // Get last 5 transactions
+                .reverse(); // Show newest first
+
+            const tbody = document.getElementById('recentTransactions');
+            tbody.innerHTML = '';
+
+            recentTransactions.forEach(tx => {
+                const date = new Date(tx.datetime);
+                const row = `
+                    <tr>
+                        <td>${date.toLocaleDateString('so-SO')}</td>
+                        <td>${tx.liters}L</td>
+                        <td>$${tx.total_price.toFixed(2)}</td>
+                        <td>
+                            <span class="payment-tag ${tx.payment_method === 'Cash' ? 'cash' : 'credit'}">
+                                ${tx.payment_method}
+                            </span>
+                        </td>
+                        <td>${tx.customerName || '-'}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+    </script>
+</body>
+</html>
